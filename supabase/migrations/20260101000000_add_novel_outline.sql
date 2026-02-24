@@ -1,0 +1,9 @@
+ALTER TABLE novels
+  ADD COLUMN IF NOT EXISTS outline_text TEXT;
+
+ALTER TABLE novels
+  ADD COLUMN IF NOT EXISTS outline_structure JSONB NOT NULL DEFAULT '[]'::jsonb;
+
+ALTER TABLE novels
+  ADD COLUMN IF NOT EXISTS rhythm_curve JSONB NOT NULL DEFAULT '[]'::jsonb;
+

@@ -1,0 +1,628 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+/* ============================================
+   COSMIC CREATIVE STUDIO - Design System
+   ============================================ */
+
+:root {
+  /* Typography */
+  --font-display: 'Georgia', serif;
+  --font-body: -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+
+  /* Cosmic Palette - Lighter Version */
+  --cosmic-deep: #141420;
+  --cosmic-void: #1e1e32;
+  --cosmic-nebula: #252540;
+  --cosmic-stardust: #2d2d4d;
+  --cosmic-mist: #35355a;
+
+  /* Accent Colors */
+  --accent-aurora: #a78bfa;
+  --accent-plasma: #c084fc;
+  --accent-nova: #f472b6;
+  --accent-comet: #38bdf8;
+  --accent-solar: #fbbf24;
+
+  /* Semantic Colors */
+  --success: #4ade80;
+  --warning: #fbbf24;
+  --error: #f87171;
+  --info: #38bdf8;
+
+  /* Glass Effect */
+  --glass-bg: rgba(35, 35, 60, 0.75);
+  --glass-border: rgba(167, 139, 250, 0.25);
+  --glass-shine: rgba(255, 255, 255, 0.08);
+
+  /* Shadows */
+  --shadow-sm: 0 2px 4px rgba(0, 0, 0, 0.2);
+  --shadow-md: 0 4px 12px rgba(0, 0, 0, 0.3);
+  --shadow-lg: 0 8px 32px rgba(0, 0, 0, 0.4);
+  --shadow-glow: 0 0 40px rgba(167, 139, 250, 0.2);
+  --shadow-glow-strong: 0 0 60px rgba(167, 139, 250, 0.3);
+
+  /* Spacing */
+  --radius-sm: 8px;
+  --radius-md: 12px;
+  --radius-lg: 20px;
+  --radius-xl: 28px;
+
+  /* Transitions */
+  --ease-spring: cubic-bezier(0.34, 1.56, 0.64, 1);
+  --ease-smooth: cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+/* ============================================
+   Base Styles
+   ============================================ */
+
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
+
+body {
+  font-family: var(--font-body);
+  background: var(--cosmic-deep);
+  color: #e5e5e5;
+  line-height: 1.6;
+  font-weight: 400;
+  overflow-x: hidden;
+  min-height: 100vh;
+}
+
+#root {
+  min-height: 100vh;
+}
+
+/* Custom Scrollbar */
+::-webkit-scrollbar {
+  width: 8px;
+  height: 8px;
+}
+
+::-webkit-scrollbar-track {
+  background: var(--cosmic-void);
+}
+
+::-webkit-scrollbar-thumb {
+  background: var(--cosmic-stardust);
+  border-radius: 4px;
+  transition: background 0.3s ease;
+}
+
+::-webkit-scrollbar-thumb:hover {
+  background: var(--accent-aurora);
+}
+
+/* Selection */
+::selection {
+  background: var(--accent-aurora);
+  color: var(--cosmic-deep);
+}
+
+/* ============================================
+   Cosmic Background
+   ============================================ */
+
+.cosmic-bg {
+  position: fixed;
+  inset: 0;
+  z-index: 0;
+  background:
+    radial-gradient(ellipse 80% 50% at 50% -20%, rgba(167, 139, 250, 0.15) 0%, transparent 50%),
+    radial-gradient(ellipse 60% 40% at 100% 0%, rgba(192, 132, 252, 0.1) 0%, transparent 50%),
+    radial-gradient(ellipse 50% 30% at 0% 100%, rgba(244, 114, 182, 0.08) 0%, transparent 50%),
+    var(--cosmic-deep);
+}
+
+.cosmic-bg::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background-image:
+    radial-gradient(2px 2px at 20% 30%, rgba(255, 255, 255, 0.3) 50%, transparent 50%),
+    radial-gradient(2px 2px at 60% 70%, rgba(255, 255, 255, 0.2) 50%, transparent 50%),
+    radial-gradient(1px 1px at 50% 50%, rgba(167, 139, 250, 0.4) 50%, transparent 50%),
+    radial-gradient(1px 1px at 80% 10%, rgba(192, 132, 252, 0.3) 50%, transparent 50%),
+    radial-gradient(2px 2px at 90% 60%, rgba(244, 114, 182, 0.2) 50%, transparent 50%),
+    radial-gradient(1px 1px at 33% 80%, rgba(56, 189, 248, 0.3) 50%, transparent 50%),
+    radial-gradient(1px 1px at 15% 90%, rgba(167, 139, 250, 0.2) 50%, transparent 50%);
+  background-size: 550px 550px;
+  animation: drift 120s linear infinite;
+  opacity: 0.6;
+}
+
+@keyframes drift {
+  from { transform: translate(0, 0); }
+  to { transform: translate(-550px, -550px); }
+}
+
+/* ============================================
+   Typography
+   ============================================ */
+
+h1, h2, h3, h4, h5, h6 {
+  font-family: var(--font-display);
+  font-weight: 600;
+  color: #ffffff;
+  letter-spacing: -0.02em;
+}
+
+h1 { font-size: 2.5rem; line-height: 1.2; }
+h2 { font-size: 2rem; line-height: 1.3; }
+h3 { font-size: 1.5rem; line-height: 1.4; }
+
+/* ============================================
+   Glass Card Component
+   ============================================ */
+
+.glass-card {
+  background: var(--glass-bg);
+  backdrop-filter: blur(20px) saturate(180%);
+  -webkit-backdrop-filter: blur(20px) saturate(180%);
+  border: 1px solid var(--glass-border);
+  border-radius: var(--radius-lg);
+  box-shadow: var(--shadow-md);
+  transition: all 0.4s var(--ease-smooth);
+}
+
+.glass-card:hover {
+  border-color: rgba(167, 139, 250, 0.3);
+  box-shadow: var(--shadow-glow), var(--shadow-md);
+  transform: translateY(-2px);
+}
+
+.glass-card-shine {
+  position: relative;
+  overflow: hidden;
+}
+
+.glass-card-shine::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: -100%;
+  width: 100%;
+  height: 100%;
+  background: linear-gradient(
+    90deg,
+    transparent,
+    rgba(255, 255, 255, 0.03),
+    transparent
+  );
+  transition: left 0.6s ease;
+}
+
+.glass-card-shine:hover::before {
+  left: 100%;
+}
+
+/* ============================================
+   Animations
+   ============================================ */
+
+@keyframes fadeInUp {
+  from {
+    opacity: 0;
+    transform: translateY(20px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@keyframes fadeIn {
+  from { opacity: 0; }
+  to { opacity: 1; }
+}
+
+@keyframes slideInLeft {
+  from {
+    opacity: 0;
+    transform: translateX(-30px);
+  }
+  to {
+    opacity: 1;
+    transform: translateX(0);
+  }
+}
+
+@keyframes pulse-glow {
+  0%, 100% {
+    box-shadow: 0 0 20px rgba(167, 139, 250, 0.3);
+  }
+  50% {
+    box-shadow: 0 0 40px rgba(167, 139, 250, 0.5);
+  }
+}
+
+@keyframes float {
+  0%, 100% { transform: translateY(0px); }
+  50% { transform: translateY(-10px); }
+}
+
+.animate-fade-in-up {
+  animation: fadeInUp 0.6s var(--ease-smooth) forwards;
+}
+
+.animate-fade-in {
+  animation: fadeIn 0.5s var(--ease-smooth) forwards;
+}
+
+.animate-slide-in-left {
+  animation: slideInLeft 0.5s var(--ease-smooth) forwards;
+}
+
+/* Staggered animation delays */
+.stagger-1 { animation-delay: 0.1s; }
+.stagger-2 { animation-delay: 0.2s; }
+.stagger-3 { animation-delay: 0.3s; }
+.stagger-4 { animation-delay: 0.4s; }
+.stagger-5 { animation-delay: 0.5s; }
+
+/* ============================================
+   Utility Classes
+   ============================================ */
+
+.text-gradient {
+  background: linear-gradient(135deg, var(--accent-aurora), var(--accent-plasma), var(--accent-nova));
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+}
+
+.text-gradient-aurora {
+  background: linear-gradient(135deg, var(--accent-comet), var(--accent-aurora));
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+}
+
+.glow-text {
+  text-shadow: 0 0 30px rgba(167, 139, 250, 0.5);
+}
+
+/* ============================================
+   Ant Design Overrides
+   ============================================ */
+
+/* Layout */
+.ant-layout {
+  background: transparent !important;
+}
+
+.ant-layout-sider {
+  background: var(--glass-bg) !important;
+  backdrop-filter: blur(20px) saturate(180%);
+  -webkit-backdrop-filter: blur(20px) saturate(180%);
+  border-right: 1px solid var(--glass-border) !important;
+}
+
+.ant-layout-header {
+  background: var(--glass-bg) !important;
+  backdrop-filter: blur(20px) saturate(180%);
+  -webkit-backdrop-filter: blur(20px) saturate(180%);
+  border-bottom: 1px solid var(--glass-border) !important;
+  box-shadow: var(--shadow-sm);
+}
+
+.ant-layout-content {
+  background: transparent !important;
+}
+
+/* Menu */
+.ant-menu-dark {
+  background: transparent !important;
+  border: none !important;
+}
+
+.ant-menu-dark .ant-menu-item-selected {
+  background: linear-gradient(90deg, rgba(167, 139, 250, 0.2), transparent) !important;
+  border-left: 3px solid var(--accent-aurora);
+}
+
+.ant-menu-dark .ant-menu-item {
+  color: rgba(255, 255, 255, 0.7) !important;
+  margin: 4px 8px !important;
+  border-radius: var(--radius-sm) !important;
+  transition: all 0.3s ease !important;
+}
+
+.ant-menu-dark .ant-menu-item:hover {
+  color: #ffffff !important;
+  background: rgba(167, 139, 250, 0.1) !important;
+}
+
+/* Cards */
+.ant-card {
+  background: var(--glass-bg) !important;
+  backdrop-filter: blur(20px) saturate(180%);
+  -webkit-backdrop-filter: blur(20px) saturate(180%);
+  border: 1px solid var(--glass-border) !important;
+  border-radius: var(--radius-lg) !important;
+  box-shadow: var(--shadow-md) !important;
+  transition: all 0.4s var(--ease-smooth) !important;
+}
+
+.ant-card:hover {
+  border-color: rgba(167, 139, 250, 0.3) !important;
+  box-shadow: var(--shadow-glow), var(--shadow-md) !important;
+}
+
+.ant-card-head {
+  background: transparent !important;
+  border-bottom: 1px solid var(--glass-border) !important;
+}
+
+.ant-card-head-title {
+  color: #ffffff !important;
+  font-family: var(--font-display) !important;
+}
+
+.ant-card-body {
+  color: rgba(255, 255, 255, 0.9) !important;
+}
+
+.ant-card-meta-title {
+  color: #ffffff !important;
+}
+
+.ant-card-meta-description {
+  color: rgba(255, 255, 255, 0.6) !important;
+}
+
+/* Buttons */
+.ant-btn-primary {
+  background: linear-gradient(135deg, var(--accent-aurora), var(--accent-plasma)) !important;
+  border: none !important;
+  box-shadow: 0 4px 15px rgba(167, 139, 250, 0.3) !important;
+  transition: all 0.3s ease !important;
+}
+
+.ant-btn-primary:hover {
+  box-shadow: 0 6px 25px rgba(167, 139, 250, 0.5) !important;
+  transform: translateY(-2px) !important;
+}
+
+.ant-btn-default {
+  background: rgba(255, 255, 255, 0.05) !important;
+  border-color: var(--glass-border) !important;
+  color: rgba(255, 255, 255, 0.9) !important;
+  transition: all 0.3s ease !important;
+}
+
+.ant-btn-default:hover {
+  background: rgba(167, 139, 250, 0.1) !important;
+  border-color: var(--accent-aurora) !important;
+  color: #ffffff !important;
+}
+
+/* Input - keep minimal overrides since ConfigProvider handles dark theme */
+.ant-input {
+  transition: all 0.3s ease !important;
+}
+
+.ant-input:focus {
+  box-shadow: 0 0 20px rgba(167, 139, 250, 0.2) !important;
+}
+
+/* Select - minimal overrides */
+.ant-select-dropdown {
+  backdrop-filter: blur(20px) saturate(180%) !important;
+  box-shadow: var(--shadow-lg) !important;
+}
+
+/* Modal */
+.ant-modal-content {
+  backdrop-filter: blur(30px) saturate(180%) !important;
+  border-radius: var(--radius-xl) !important;
+}
+
+.ant-modal-title {
+  font-family: var(--font-display) !important;
+}
+
+/* Form */
+.ant-form-item-label > label {
+  color: rgba(255, 255, 255, 0.9) !important;
+}
+
+.ant-form-item-explain-error {
+  color: var(--error) !important;
+}
+
+/* Tabs */
+.ant-tabs-tab {
+  color: rgba(255, 255, 255, 0.6) !important;
+  transition: all 0.3s ease !important;
+}
+
+.ant-tabs-tab:hover {
+  color: var(--accent-aurora) !important;
+}
+
+.ant-tabs-tab-active .ant-tabs-tab-btn {
+  color: #ffffff !important;
+}
+
+.ant-tabs-ink-bar {
+  background: linear-gradient(90deg, var(--accent-aurora), var(--accent-plasma)) !important;
+}
+
+/* Tag */
+.ant-tag {
+  background: rgba(167, 139, 250, 0.15) !important;
+  border-color: var(--glass-border) !important;
+  color: var(--accent-aurora) !important;
+}
+
+/* List */
+.ant-list-item {
+  color: rgba(255, 255, 255, 0.9) !important;
+  border-bottom: 1px solid var(--glass-border) !important;
+}
+
+/* Typography override */
+.ant-typography {
+  color: rgba(255, 255, 255, 0.9) !important;
+}
+
+.ant-typography h1,
+.ant-typography h2,
+.ant-typography h3,
+.ant-typography h4,
+.ant-typography h5 {
+  color: #ffffff !important;
+}
+
+/* Dropdown */
+.ant-dropdown-menu {
+  background: var(--cosmic-void) !important;
+  border: 1px solid var(--glass-border) !important;
+  backdrop-filter: blur(20px) saturate(180%);
+}
+
+.ant-dropdown-menu-item {
+  color: rgba(255, 255, 255, 0.8) !important;
+}
+
+.ant-dropdown-menu-item:hover {
+  background: rgba(167, 139, 250, 0.1) !important;
+}
+
+/* Avatar */
+.ant-avatar {
+  background: linear-gradient(135deg, var(--accent-aurora), var(--accent-plasma)) !important;
+}
+
+/* Breadcrumb */
+.ant-breadcrumb-link {
+  color: rgba(255, 255, 255, 0.6) !important;
+}
+
+.ant-breadcrumb-separator {
+  color: rgba(255, 255, 255, 0.4) !important;
+}
+
+/* TextArea */
+.ant-input-textarea {
+  background: transparent !important;
+}
+
+/* Input Number */
+.ant-input-number-focused {
+  box-shadow: 0 0 20px rgba(167, 139, 250, 0.2) !important;
+}
+
+/* Collapse */
+.ant-collapse {
+  background: transparent !important;
+  border: 1px solid var(--glass-border) !important;
+}
+
+.ant-collapse-header {
+  color: rgba(255, 255, 255, 0.9) !important;
+}
+
+.ant-collapse-content {
+  background: transparent !important;
+  border-top: 1px solid var(--glass-border) !important;
+}
+
+.ant-collapse-content-box {
+  color: rgba(255, 255, 255, 0.8) !important;
+}
+
+/* Popover - minimal overrides */
+.ant-popover-inner {
+  backdrop-filter: blur(20px) saturate(180%) !important;
+}
+
+/* Tooltip - minimal overrides */
+.ant-tooltip-inner {
+  backdrop-filter: blur(20px) saturate(180%) !important;
+}
+
+/* Empty */
+.ant-empty-description {
+  color: rgba(255, 255, 255, 0.5) !important;
+}
+
+/* Message */
+.ant-message-notice-content {
+  backdrop-filter: blur(20px) saturate(180%) !important;
+  box-shadow: var(--shadow-lg) !important;
+}
+
+/* Notification */
+.ant-notification-notice {
+  backdrop-filter: blur(20px) saturate(180%) !important;
+  box-shadow: var(--shadow-lg) !important;
+}
+
+/* ============================================
+   Special Effects
+   ============================================ */
+
+.aurora-glow {
+  position: relative;
+}
+
+.aurora-glow::after {
+  content: '';
+  position: absolute;
+  inset: -2px;
+  border-radius: inherit;
+  padding: 2px;
+  background: linear-gradient(135deg, var(--accent-aurora), var(--accent-plasma), var(--accent-nova), var(--accent-comet));
+  -webkit-mask: linear-gradient(#fff 0 0) content-box, linear-gradient(#fff 0 0);
+  mask: linear-gradient(#fff 0 0) content-box, linear-gradient(#fff 0 0);
+  -webkit-mask-composite: xor;
+  mask-composite: exclude;
+  opacity: 0;
+  transition: opacity 0.4s ease;
+  pointer-events: none;
+}
+
+.aurora-glow:hover::after {
+  opacity: 1;
+}
+
+/* Floating animation for decorative elements */
+.float-element {
+  animation: float 6s ease-in-out infinite;
+}
+
+.float-element-delay {
+  animation: float 8s ease-in-out infinite;
+  animation-delay: -3s;
+}
+
+/* ============================================
+   Page Transitions
+   ============================================ */
+
+.page-enter {
+  opacity: 0;
+  transform: translateY(20px);
+}
+
+.page-enter-active {
+  opacity: 1;
+  transform: translateY(0);
+  transition: opacity 0.4s ease, transform 0.4s var(--ease-smooth);
+}
+
+.page-exit {
+  opacity: 1;
+}
+
+.page-exit-active {
+  opacity: 0;
+  transition: opacity 0.3s ease;
+}

@@ -1,0 +1,141 @@
+/* ============================================
+   ReactQuill Dark Theme Override
+   ============================================ */
+
+/* Quill Editor Container */
+.quill {
+  background: transparent !important;
+  border: none !important;
+}
+
+/* Quill Toolbar */
+.quill .ql-toolbar {
+  background: rgba(26, 26, 46, 0.6) !important;
+  backdrop-filter: blur(20px) saturate(180%);
+  -webkit-backdrop-filter: blur(20px) saturate(180%);
+  border: 1px solid rgba(167, 139, 250, 0.15) !important;
+  border-radius: 12px 12px 0 0 !important;
+  padding: 12px 16px !important;
+}
+
+/* Quill Editor */
+.quill .ql-container {
+  background: rgba(18, 18, 31, 0.8) !important;
+  backdrop-filter: blur(20px) saturate(180%);
+  -webkit-backdrop-filter: blur(20px) saturate(180%);
+  border: 1px solid rgba(167, 139, 250, 0.15) !important;
+  border-top: none !important;
+  border-radius: 0 0 12px 12px !important;
+  color: rgba(255, 255, 255, 0.9) !important;
+  font-size: 16px;
+  line-height: 1.8;
+}
+
+/* Quill Content */
+.quill .ql-editor {
+  background: transparent !important;
+  color: rgba(255, 255, 255, 0.9) !important;
+  min-height: 600px;
+  padding: 20px 24px !important;
+}
+
+.quill .ql-editor.ql-blank::before {
+  color: rgba(255, 255, 255, 0.3) !important;
+  font-style: normal;
+}
+
+/* Quill Buttons */
+.quill .ql-toolbar button {
+  color: rgba(255, 255, 255, 0.7) !important;
+  transition: all 0.3s ease !important;
+  border-radius: 6px !important;
+}
+
+.quill .ql-toolbar button:hover {
+  color: #ffffff !important;
+  background: rgba(167, 139, 250, 0.2) !important;
+}
+
+.quill .ql-toolbar button.ql-active {
+  color: var(--accent-aurora) !important;
+  background: rgba(167, 139, 250, 0.15) !important;
+}
+
+/* Quill Dropdowns */
+.quill .ql-toolbar .ql-picker-label {
+  color: rgba(255, 255, 255, 0.7) !important;
+}
+
+.quill .ql-toolbar .ql-picker-label:hover {
+  color: #ffffff !important;
+}
+
+.quill .ql-toolbar .ql-picker-options {
+  background: var(--cosmic-void) !important;
+  border: 1px solid rgba(167, 139, 250, 0.15) !important;
+  backdrop-filter: blur(20px) saturate(180%);
+  box-shadow: 0 8px 32px rgba(0, 0, 0, 0.5) !important;
+}
+
+.quill .ql-toolbar .ql-picker-item {
+  color: rgba(255, 255, 255, 0.8) !important;
+}
+
+.quill .ql-toolbar .ql-picker-item:hover {
+  background: rgba(167, 139, 250, 0.2) !important;
+}
+
+.quill .ql-toolbar .ql-picker-item.ql-selected {
+  color: var(--accent-aurora) !important;
+  background: rgba(167, 139, 250, 0.15) !important;
+}
+
+/* Quill Separator */
+.quill .ql-toolbar .ql-separator {
+  border-left: 1px solid rgba(167, 139, 250, 0.2) !important;
+}
+
+/* Placeholder styling */
+.quill .ql-editor p {
+  color: rgba(255, 255, 255, 0.9) !important;
+}
+
+/* Links in editor */
+.quill .ql-editor a {
+  color: var(--accent-comet) !important;
+  text-decoration: underline;
+}
+
+/* Blockquote */
+.quill .ql-editor blockquote {
+  border-left: 4px solid var(--accent-aurora) !important;
+  padding-left: 16px;
+  color: rgba(255, 255, 255, 0.7) !important;
+  margin-left: 0;
+}
+
+/* Code */
+.quill .ql-editor code {
+  background: rgba(167, 139, 250, 0.1) !important;
+  color: var(--accent-comet) !important;
+  padding: 2px 6px;
+  border-radius: 4px;
+  font-family: 'Courier New', monospace;
+}
+
+/* Lists */
+.quill .ql-editor ul li::before {
+  color: var(--accent-aurora) !important;
+}
+
+.quill .ql-editor ol li::before {
+  color: var(--accent-aurora) !important;
+}
+
+/* Headers in editor */
+.quill .ql-editor h1,
+.quill .ql-editor h2,
+.quill .ql-editor h3 {
+  color: #ffffff !important;
+  font-weight: 600;
+}

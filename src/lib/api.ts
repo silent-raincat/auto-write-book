@@ -1,5 +1,3 @@
-import { TEST_USER_ID } from './utils'
-
 const API_URL = '/api'
 
 interface RequestOptions extends RequestInit {
@@ -8,20 +6,24 @@ interface RequestOptions extends RequestInit {
 
 async function request<T>(url: string, options: RequestOptions = {}): Promise<T> {
   const { token, ...init } = options
-  
+
   const headers = new Headers(init.headers)
-  if (token) {
-    headers.set('Authorization', `Bearer ${token}`)
+
+  // 添加认证 token（如果存在）
+  const authToken = token || (typeof window !== 'undefined' ? localStorage.getItem('auth_token') : null)
+  if (authToken) {
+    headers.set('Authorization', `Bearer ${authToken}`)
   }
-  if (!headers.has('x-user-id')) {
-    headers.set('x-user-id', TEST_USER_ID)
-  }
+
+  // 添加 ModelScope API Key（如果存在）
   if (!headers.has('x-modelscope-api-key') && typeof window !== 'undefined') {
     const modelscopeKey = window.localStorage.getItem('modelscope_api_key')
     if (modelscopeKey && modelscopeKey.trim()) {
       headers.set('x-modelscope-api-key', modelscopeKey.trim())
     }
   }
+
+  // 设置默认 Content-Type
   if (!headers.has('Content-Type')) {
     headers.set('Content-Type', 'application/json')
   }
@@ -39,6 +41,20 @@ async function request<T>(url: string, options: RequestOptions = {}): Promise<T>
     } catch {
       data = rawText
     }
+  }
+
+  // 处理 401 未授权错误
+  if (response.status === 401) {
+    // 清除本地认证信息
+    if (typeof window !== 'undefined') {
+      localStorage.removeItem('auth_token')
+      localStorage.removeItem('auth_user')
+    }
+    // 触发登出
+    if (typeof window !== 'undefined') {
+      window.location.href = '/login'
+    }
+    throw new Error('登录已过期，请重新登录')
   }
 
   if (!response.ok) {

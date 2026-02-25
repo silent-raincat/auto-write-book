@@ -27,21 +27,25 @@ const AppLayout: React.FC = () => {
 
   useEffect(() => {
     setMounted(true);
+    // 如果已经有用户信息（从 localStorage 恢复），不再请求
+    if (user) return;
+
     let mounted = true;
     api
-      .get<User>('/users/me')
-      .then((data) => {
+      .get<{ user: User }>('/auth/me')
+      .then((response) => {
         if (!mounted) return;
-        setUser(data);
+        setUser(response.user);
       })
       .catch(() => {
         if (!mounted) return;
+        // 401 错误会在 api.ts 中处理
         setUser(null);
       });
     return () => {
       mounted = false;
     };
-  }, [setUser]);
+  }, [setUser, user]);
 
   const menuItems = [
     {
@@ -92,7 +96,7 @@ const AppLayout: React.FC = () => {
     onClick: ({ key }: { key: string }) => {
       if (key === 'logout') {
         logout();
-        navigate('/dashboard');
+        navigate('/login');
       }
     },
   };

@@ -9,12 +9,20 @@ import NovelDetail from "@/pages/editor/NovelDetail";
 import ChapterEditor from "@/pages/editor/ChapterEditor";
 import InspirationPool from "@/pages/InspirationPool";
 import SmartWorldView from "@/pages/SmartWorldView";
+import LoginPage from "@/pages/auth/LoginPage";
+import RegisterPage from "@/pages/auth/RegisterPage";
+import ProtectedRoute from "@/components/auth/ProtectedRoute";
 
 export default function App() {
   return (
     <Router>
       <Routes>
-        <Route path="/" element={<AppLayout />}>
+        {/* 公共路由 - 登录和注册 */}
+        <Route path="/login" element={<LoginPage />} />
+        <Route path="/register" element={<RegisterPage />} />
+
+        {/* 受保护的路由 */}
+        <Route path="/" element={<ProtectedRoute><AppLayout /></ProtectedRoute>}>
           <Route index element={<Navigate to="/dashboard" replace />} />
           <Route path="dashboard" element={<Dashboard />} />
           <Route path="characters" element={<CharacterList />} />

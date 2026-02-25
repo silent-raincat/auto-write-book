@@ -877,6 +877,38 @@ export async function updateUser(userId: string, updates: Partial<User>): Promis
   }
 }
 
+// ==================== Auth Helper Functions ====================
+
+export async function getUsersByEmail(email: string): Promise<User[]> {
+  if (DB_TYPE === 'supabase') {
+    const { data, error } = await supabase.from('users').select('*').eq('email', email)
+    if (error) throw error
+    return data || []
+  } else {
+    return sqliteDb.prepare('SELECT * FROM users WHERE email = ?').all(email) || []
+  }
+}
+
+export async function getUserPasswordHash(userId: string): Promise<string | null> {
+  if (DB_TYPE === 'supabase') {
+    const { data, error } = await supabase.from('users').select('password_hash').eq('id', userId).single()
+    if (error) throw error
+    return data?.password_hash || null
+  } else {
+    const result = sqliteDb.prepare('SELECT password_hash FROM users WHERE id = ?').get(userId) as { password_hash?: string } | undefined
+    return result?.password_hash || null
+  }
+}
+
+export async function updateUserPasswordHash(userId: string, passwordHash: string): Promise<void> {
+  if (DB_TYPE === 'supabase') {
+    const { error } = await supabase.from('users').update({ password_hash: passwordHash }).eq('id', userId)
+    if (error) throw error
+  } else {
+    sqliteDb.prepare('UPDATE users SET password_hash = ? WHERE id = ?').run(passwordHash, userId)
+  }
+}
+
 // ==================== 初始化 ====================
 
 export async function initializeDatabase() {

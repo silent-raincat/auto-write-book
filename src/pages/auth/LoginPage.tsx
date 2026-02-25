@@ -28,8 +28,11 @@ export default function LoginPage() {
         password: values.password
       })
 
-      // 保存用户信息和 token
-      login(response.user, response.token)
+      // 保存用户信息和 token（类型转换）
+      login({
+        ...response.user,
+        plan: response.user.plan as 'free' | 'premium'
+      }, response.token)
 
       // 保存 token 到 localStorage
       localStorage.setItem('auth_token', response.token)

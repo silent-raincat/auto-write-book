@@ -18,6 +18,8 @@ data
 
 # Build artifacts
 dist/api
+api
+api/dist
 
 # IDE
 .vscode

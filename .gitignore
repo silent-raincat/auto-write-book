@@ -44,3 +44,4 @@ nul
 
 # Claude files
 .claude/
+.vercel

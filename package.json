@@ -14,12 +14,13 @@
     "server:dev": "nodemon",
     "start:prod": "node api/dist/server.js",
     "prod": "npm run build:prod && npm run start:prod",
-    "dev": "concurrently \"npm run client:dev\" \"npm run server:dev\""
+    "dev": "concurrently \"npm run client:dev\" \"npm run server:dev\"",
+    "deploy": "vercel",
+    "deploy:prod": "vercel --prod"
   },
   "dependencies": {
     "@supabase/supabase-js": "^2.39.0",
     "antd": "^5.12.0",
-    "better-sqlite3": "^12.6.2",
     "clsx": "^2.1.1",
     "cors": "^2.8.5",
     "dotenv": "^17.2.1",
@@ -34,6 +35,9 @@
     "react-router-dom": "^7.3.0",
     "tailwind-merge": "^3.0.2",
     "zustand": "^5.0.3"
+  },
+  "optionalDependencies": {
+    "better-sqlite3": "^12.6.2"
   },
   "devDependencies": {
     "@eslint/js": "^9.25.0",

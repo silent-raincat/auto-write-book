@@ -1,29 +1,10 @@
 {
-  "version": 2,
-  "builds": [
+  "buildCommand": "npm run build",
+  "outputDirectory": "dist",
+  "rewrites": [
     {
-      "src": "package.json",
-      "use": "@vercel/node",
-      "config": {
-        "includeFiles": ["dist/**"]
-      }
+      "source": "/api/:path*",
+      "destination": "https://auto-write-book-api.railway.app/api/:path*"
     }
-  ],
-  "routes": [
-    {
-      "src": "/api/(.*)",
-      "dest": "api/dist/index.js"
-    },
-    {
-      "src": "/health",
-      "dest": "api/dist/index.js"
-    },
-    {
-      "src": "/(.*)",
-      "dest": "dist/$1"
-    }
-  ],
-  "env": {
-    "DB_TYPE": "supabase"
-  }
+  ]
 }

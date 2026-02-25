@@ -705,11 +705,11 @@ ${basePrompt}
   const handleReplaceSelection = () => {
     if (!selection || !rewriteResult) return;
 
-    const quill = quillRef.current?.getEditor();
+    const quill = (quillRef.current as any)?.getEditor();
     if (quill) {
       quill.deleteText(selection.index, selection.length);
       quill.insertText(selection.index, rewriteResult);
-      setContent(quill.getRoot().innerHTML);
+      setContent(quill.root?.innerHTML || '');
       setRewriteModalOpen(false);
       setSelection(null);
       setRewriteResult('');

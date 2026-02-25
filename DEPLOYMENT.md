@@ -1,4 +1,4 @@
-# AI Novel Writing System - Deployment Guide
+# AI Novel Writing System - Cloud Deployment Guide
 
 This guide explains how to deploy the AI Novel Writing System to the cloud for free.
 
@@ -13,19 +13,11 @@ This guide explains how to deploy the AI Novel Writing System to the cloud for f
                       │ HTTPS
                       ▼
 ┌─────────────────────────────────────────────────────────┐
-│   Vercel (Frontend)                                      │
-│   - React App                                            │
-│   - Static Files (HTML/JS/CSS)                           │
+│   Vercel (Frontend + Backend)                           │
+│   - React App (Static Files)                            │
+│   - API Routes (Serverless Functions)                   │
 │   - CDN Global Distribution                              │
-│   Free: 100GB bandwidth/month                            │
-└─────────────────────┬───────────────────────────────────┘
-                      │ API Requests (rewritten)
-                      ▼
-┌─────────────────────────────────────────────────────────┐
-│   Railway (Backend API)                                  │
-│   - Node.js + Express                                    │
-│   - Serverless Functions                                 │
-│   Free: $5/month credit                                 │
+│   Free: 100GB bandwidth/month, 100GB-hrs serverless     │
 └─────────────────────┬───────────────────────────────────┘
                       │ Data Access
                       ▼
@@ -39,24 +31,30 @@ This guide explains how to deploy the AI Novel Writing System to the cloud for f
 
 ---
 
-## Step 1: Set Up Supabase Database
+## Quick Start (Vercel + Supabase)
 
-1. **Create a Supabase Project**
-   - Go to https://supabase.com
-   - Sign up/Login
-   - Click "New Project"
-   - Set password (save it securely)
-   - Choose a region closest to your users
+### Option 1: Deploy to Vercel (Recommended - Full Stack)
 
-2. **Get Your Credentials**
-   - Go to Project Settings → API
-   - Copy:
-     - `Project URL` → `VITE_SUPABASE_URL`
-     - `service_role` key → `SUPABASE_SERVICE_ROLE_KEY`
+Vercel can host both the frontend and backend as serverless functions.
 
-3. **Create Database Tables**
-   - Go to SQL Editor in Supabase
-   - Run the SQL script below:
+**Step 1: Set Up Supabase Database**
+
+1. Go to https://supabase.com
+2. Sign up/Login
+3. Click "New Project"
+4. Set password (save it securely)
+5. Choose a region closest to your users
+
+**Step 2: Get Your Supabase Credentials**
+
+1. Go to Project Settings → API
+2. Copy:
+   - `Project URL` → `VITE_SUPABASE_URL`
+   - `service_role` key → `SUPABASE_SERVICE_ROLE_KEY`
+
+**Step 3: Create Database Tables**
+
+Go to SQL Editor in Supabase and run:
 
 ```sql
 -- Users Table
@@ -199,109 +197,110 @@ CREATE INDEX idx_worldview_categories_novel ON worldview_categories(novel_id);
 CREATE INDEX idx_worldview_entries_novel ON worldview_entries(novel_id);
 CREATE INDEX idx_worldview_entries_parent ON worldview_entries(parent_id);
 CREATE INDEX idx_inspiration_materials_novel_id ON inspiration_materials(novel_id);
+
+-- Create Default User
+INSERT INTO users (id, email, name, plan)
+VALUES ('00000000-0000-0000-0000-000000000000', 'demo@cloud.app', 'Demo User', 'free');
+```
+
+**Step 4: Deploy to Vercel**
+
+```bash
+# Install Vercel CLI
+npm i -g vercel
+
+# In your project root
+vercel
+
+# Follow the prompts:
+# - Set up and deploy? Y
+# - Which scope? Your account
+# - Link to existing project? N
+# - Project name: ai-novel-writing
+# - Directory: ./
+# - Override settings? N
+```
+
+**Step 5: Configure Environment Variables in Vercel**
+
+1. Go to your project on Vercel dashboard
+2. Settings → Environment Variables
+3. Add these variables:
+
+```
+DB_TYPE=supabase
+VITE_SUPABASE_URL=your-supabase-url
+SUPABASE_SERVICE_ROLE_KEY=your-service-role-key
+MODELSCOPE_API_KEY=ms-54964895-9e08-409e-80ab-fe3709c1b1e0
+```
+
+**Step 6: Redeploy**
+
+```bash
+vercel --prod
 ```
 
 ---
 
-## Step 2: Deploy Backend to Railway
+### Option 2: Deploy to Railway (Backend API Only)
 
-1. **Prepare Your Code**
-   ```bash
-   # Make sure your code is committed to Git
-   git add .
-   git commit -m "Ready for deployment"
-   ```
+If you prefer to use Railway for the backend:
 
-2. **Connect Railway to GitHub**
-   - Go to https://railway.app
-   - Sign up with GitHub
-   - Click "New Project" → "Deploy from GitHub repo"
-   - Select your repository
+**Step 1: Prepare Your Code**
 
-3. **Configure Environment Variables**
-   In Railway project settings, add these variables:
-   ```
-   DB_TYPE=supabase
-   VITE_SUPABASE_URL=your-supabase-url
-   SUPABASE_SERVICE_ROLE_KEY=your-service-role-key
-   PORT=3002
-   NODE_ENV=production
-   MODELSCOPE_API_KEY=your-modelscope-key
-   ```
+```bash
+git add .
+git commit -m "Ready for deployment"
+```
 
-4. **Deploy**
-   - Railway will automatically detect and deploy
-   - Wait for deployment to complete
-   - Copy your Railway URL (e.g., `https://your-app.railway.app`)
+**Step 2: Connect Railway to GitHub**
 
----
+1. Go to https://railway.app
+2. Sign up with GitHub
+3. Click "New Project" → "Deploy from GitHub repo"
+4. Select your repository
 
-## Step 3: Deploy Frontend to Vercel
+**Step 3: Configure Environment Variables**
 
-1. **Install Vercel CLI**
-   ```bash
-   npm i -g vercel
-   ```
+In Railway project settings, add:
 
-2. **Deploy**
-   ```bash
-   # In your project root
-   vercel
+```
+DB_TYPE=supabase
+VITE_SUPABASE_URL=your-supabase-url
+SUPABASE_SERVICE_ROLE_KEY=your-service-role-key
+PORT=3002
+NODE_ENV=production
+MODELSCOPE_API_KEY=ms-54964895-9e08-409e-80ab-fe3709c1b1e0
+```
 
-   # Follow the prompts:
-   # - Set up and deploy? Y
-   # - Which scope? Your account
-   # - Link to existing project? N
-   # - Project name: ai-novel-writing
-   # - Directory: ./
-   # - Override settings? N
-   ```
+**Step 4: Deploy**
 
-3. **Configure Environment Variables in Vercel**
-   - Go to your project on Vercel dashboard
-   - Settings → Environment Variables
-   - Add:
-     ```
-     VITE_SUPABASE_URL=your-supabase-url
-     DB_TYPE=supabase
-     ```
+- Railway will automatically detect and deploy
+- Wait for deployment to complete
+- Copy your Railway URL (e.g., `https://your-app.railway.app`)
 
-4. **Set API Rewrite Rules**
-   - The `vercel.json` file in your project handles this
-   - It rewrites `/api/*` requests to your Railway backend
-   - Update the `routes` in `vercel.json` if needed:
+**Step 5: Deploy Frontend to Vercel**
 
-   ```json
-   {
-     "routes": [
-       {
-         "src": "/api/(.*)",
-         "dest": "https://your-app.railway.app/api/$1"
-       }
-     ]
-   }
-   ```
+Update `vercel.json` to proxy API requests to Railway:
 
-5. **Redeploy**
-   ```bash
-   vercel --prod
-   ```
-
----
-
-## Step 4: Update Frontend API Configuration
-
-Update `src/lib/api.ts` to use the deployed backend URL in production:
-
-```typescript
-const API_URL = import.meta.env.MODE === 'production'
-  ? 'https://your-app.railway.app'  // Your Railway URL
-  : '/api'  // Local development
+```json
+{
+  "routes": [
+    {
+      "src": "/api/(.*)",
+      "dest": "https://your-app.railway.app/api/$1"
+    },
+    {
+      "src": "/(.*)",
+      "dest": "dist/$1"
+    }
+  ]
+}
 ```
 
 ---
 
-## Step 5: Test Your Deployment
+## Testing Your Deployment
 
 1. **Visit Your Vercel URL**
    - Should see the application loading
@@ -320,14 +319,13 @@ const API_URL = import.meta.env.MODE === 'production'
 ## Troubleshooting
 
 ### CORS Errors
-If you see CORS errors:
-- In Railway, add Vercel domain to CORS allowed origins
-- Update `api/app.ts`:
-  ```typescript
-  app.use(cors({
-    origin: ['https://your-app.vercel.app', 'http://localhost:5173']
-  }));
-  ```
+If you see CORS errors, update `api/app.ts`:
+```typescript
+app.use(cors({
+  origin: ['https://your-app.vercel.app', 'http://localhost:5173'],
+  credentials: true
+}));
+```
 
 ### Database Connection Issues
 - Verify `DB_TYPE=supabase` is set
@@ -335,9 +333,14 @@ If you see CORS errors:
 - Ensure Supabase project is active (not paused)
 
 ### Build Failures
-- Check Railway build logs
+- Check Vercel build logs
 - Ensure all dependencies are in `package.json`
 - Verify `npm run build:prod` works locally
+
+### Lambda Size Issues
+If you hit the 50MB Lambda limit:
+- Reduce dependencies
+- Use `@vercel/node` with `maxLambdaSize` config
 
 ---
 
@@ -345,10 +348,24 @@ If you see CORS errors:
 
 | Service | Free Tier | Monthly Cost |
 |---------|-----------|--------------|
-| Vercel | 100GB bandwidth, builds | $0 |
+| Vercel | 100GB bandwidth, 100GB-hrs | $0 |
 | Railway | $5 credit (512MB RAM) | $0 |
 | Supabase | 500MB DB, 1GB bandwidth | $0 |
-| **Total** | | **$0/month** |
+| **Total (Vercel)** | | **$0/month** |
+| **Total (Railway)** | | **$0/month** |
+
+---
+
+## Environment Variables Reference
+
+| Variable | Description | Example |
+|----------|-------------|---------|
+| `DB_TYPE` | Database type | `supabase` or `sqlite` |
+| `VITE_SUPABASE_URL` | Supabase project URL | `https://xxx.supabase.co` |
+| `SUPABASE_SERVICE_ROLE_KEY` | Supabase service key | `eyJ...` |
+| `MODELSCOPE_API_KEY` | ModelScope API key | `ms-xxx...` |
+| `PORT` | Server port | `3002` (default for Railway) |
+| `NODE_ENV` | Environment | `production` |
 
 ---
 
@@ -356,16 +373,14 @@ If you see CORS errors:
 
 1. **Set Up Custom Domain** (optional)
    - Vercel: Domains → Add Domain
-   - Railway: Settings → Domains
 
 2. **Enable Automatic Backups** (Supabase)
    - Database → Backups → Enable daily backups
 
 3. **Monitor Usage**
    - Vercel Analytics
-   - Railway Metrics
    - Supabase Dashboard
 
 4. **Scale When Needed**
-   - Paid plans start at $20/month (Railway)
+   - Vercel Pro: $20/month
    - Supabase Pro: $25/month

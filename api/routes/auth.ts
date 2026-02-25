@@ -10,8 +10,8 @@ import * as db from '../lib/db.js'
 const router = Router()
 
 // JWT Secret (从环境变量获取，默认值用于开发)
-const JWT_SECRET = process.env.JWT_SECRET || 'your-secret-key-change-in-production'
-const JWT_EXPIRES_IN = process.env.JWT_EXPIRES_IN || '7d'
+const JWT_SECRET = (process.env.JWT_SECRET || 'your-secret-key-change-in-production') as string
+const JWT_EXPIRES_IN = (process.env.JWT_EXPIRES_IN || '7d') as string
 
 interface RegisterRequest {
   email: string
@@ -28,7 +28,7 @@ interface LoginRequest {
  * Generate JWT Token
  */
 function generateToken(userId: string): string {
-  return jwt.sign({ userId }, JWT_SECRET, { expiresIn: JWT_EXPIRES_IN })
+  return (jwt as any).sign({ userId }, JWT_SECRET, { expiresIn: JWT_EXPIRES_IN })
 }
 
 /**
@@ -36,7 +36,8 @@ function generateToken(userId: string): string {
  */
 function verifyToken(token: string): { userId: string } | null {
   try {
-    return jwt.verify(token, JWT_SECRET) as { userId: string }
+    const decoded = (jwt as any).verify(token, JWT_SECRET) as { userId: string }
+    return decoded
   } catch {
     return null
   }

@@ -880,12 +880,186 @@ export async function updateUser(userId: string, updates: Partial<User>): Promis
 // ==================== 初始化 ====================
 
 export async function initializeDatabase() {
-  if (DB_TYPE === 'sqlite') {
-    // SQLite 初始化逻辑（保持原有的 database.ts 逻辑）
-    const { initializeDatabase: initSqlite } = require('./database.js')
-    initSqlite()
+  if (DB_TYPE === 'supabase') {
+    // Supabase 模式：验证配置
+    if (!supabaseUrl || !supabaseServiceRoleKey) {
+      throw new Error('Missing Supabase credentials. Set VITE_SUPABASE_URL and SUPABASE_SERVICE_ROLE_KEY.')
+    }
+    console.log('Using Supabase database')
+    return
   }
-  // Supabase 不需要初始化（已在控制台创建表）
+
+  // SQLite 模式：初始化本地数据库
+  try {
+    const Database = require('better-sqlite3')
+    const path = require('path')
+    const fs = require('fs')
+
+    const dbPath = path.join(process.cwd(), 'data', 'novels.db')
+
+    // 确保数据目录存在
+    const dataDir = path.dirname(dbPath)
+    if (!fs.existsSync(dataDir)) {
+      fs.mkdirSync(dataDir, { recursive: true })
+    }
+
+    const db = new Database(dbPath)
+    db.pragma('foreign_keys = ON')
+
+    // 创建表（简化版，只创建核心表）
+    db.exec(`
+      CREATE TABLE IF NOT EXISTS users (
+        id TEXT PRIMARY KEY,
+        email TEXT UNIQUE NOT NULL,
+        password_hash TEXT,
+        name TEXT NOT NULL,
+        plan TEXT DEFAULT 'free' CHECK(plan IN ('free', 'premium')),
+        created_at TEXT DEFAULT (datetime('now'))
+      );
+
+      CREATE TABLE IF NOT EXISTS novels (
+        id TEXT PRIMARY KEY,
+        user_id TEXT NOT NULL REFERENCES users(id) ON DELETE CASCADE,
+        title TEXT NOT NULL,
+        description TEXT,
+        genre TEXT,
+        style TEXT,
+        outline_text TEXT,
+        outline_structure TEXT,
+        rhythm_curve TEXT,
+        created_at TEXT DEFAULT (datetime('now')),
+        updated_at TEXT DEFAULT (datetime('now'))
+      );
+
+      CREATE TABLE IF NOT EXISTS chapters (
+        id TEXT PRIMARY KEY,
+        novel_id TEXT NOT NULL REFERENCES novels(id) ON DELETE CASCADE,
+        title TEXT NOT NULL,
+        content TEXT,
+        chapter_number INTEGER NOT NULL,
+        status TEXT DEFAULT 'draft' CHECK(status IN ('draft', 'published', 'archived')),
+        character_notes TEXT DEFAULT '{}',
+        created_at TEXT DEFAULT (datetime('now')),
+        updated_at TEXT DEFAULT (datetime('now'))
+      );
+
+      CREATE TABLE IF NOT EXISTS characters (
+        id TEXT PRIMARY KEY,
+        novel_id TEXT NOT NULL REFERENCES novels(id) ON DELETE CASCADE,
+        name TEXT NOT NULL,
+        age INTEGER,
+        gender TEXT,
+        personality TEXT,
+        background TEXT,
+        appearance TEXT,
+        relationships TEXT DEFAULT '[]',
+        created_at TEXT DEFAULT (datetime('now')),
+        updated_at TEXT DEFAULT (datetime('now'))
+      );
+
+      CREATE TABLE IF NOT EXISTS character_relationships (
+        id TEXT PRIMARY KEY,
+        novel_id TEXT NOT NULL REFERENCES novels(id) ON DELETE CASCADE,
+        character_id TEXT NOT NULL REFERENCES characters(id) ON DELETE CASCADE,
+        related_character_id TEXT NOT NULL REFERENCES characters(id) ON DELETE CASCADE,
+        relationship_type TEXT NOT NULL,
+        relationship_description TEXT,
+        intensity INTEGER DEFAULT 5 CHECK(intensity >= 1 AND intensity <= 10),
+        status TEXT DEFAULT 'active' CHECK(status IN ('active', 'estranged', 'deceased', 'complicated')),
+        created_at TEXT DEFAULT (datetime('now')),
+        updated_at TEXT DEFAULT (datetime('now')),
+        UNIQUE(character_id, related_character_id)
+      );
+
+      CREATE TABLE IF NOT EXISTS character_states (
+        id TEXT PRIMARY KEY,
+        novel_id TEXT NOT NULL REFERENCES novels(id) ON DELETE CASCADE,
+        character_id TEXT NOT NULL REFERENCES characters(id) ON DELETE CASCADE,
+        chapter_id TEXT REFERENCES chapters(id) ON DELETE SET NULL,
+        state_type TEXT NOT NULL CHECK(state_type IN ('emotion', 'motivation', 'condition', 'goal')),
+        state_name TEXT NOT NULL,
+        state_value TEXT,
+        importance INTEGER DEFAULT 5 CHECK(importance >= 1 AND importance <= 10),
+        created_at TEXT DEFAULT (datetime('now'))
+      );
+
+      CREATE TABLE IF NOT EXISTS worldview_categories (
+        id TEXT PRIMARY KEY,
+        novel_id TEXT NOT NULL REFERENCES novels(id) ON DELETE CASCADE,
+        name TEXT NOT NULL,
+        description TEXT,
+        icon TEXT,
+        color TEXT,
+        display_order INTEGER DEFAULT 0,
+        created_at TEXT DEFAULT (datetime('now')),
+        updated_at TEXT DEFAULT (datetime('now'))
+      );
+
+      CREATE TABLE IF NOT EXISTS worldview_entries (
+        id TEXT PRIMARY KEY,
+        novel_id TEXT NOT NULL REFERENCES novels(id) ON DELETE CASCADE,
+        parent_id TEXT REFERENCES worldview_entries(id) ON DELETE SET NULL,
+        title TEXT NOT NULL,
+        content TEXT,
+        entry_type TEXT DEFAULT 'concept' CHECK(entry_type IN ('civilization', 'faction', 'item', 'skill', 'concept', 'character', 'location', 'event', 'rule')),
+        tags TEXT DEFAULT '[]',
+        related_entries TEXT DEFAULT '[]',
+        related_characters TEXT DEFAULT '[]',
+        metadata TEXT DEFAULT '{}',
+        is_locked INTEGER DEFAULT 0,
+        source_type TEXT DEFAULT 'manual' CHECK(source_type IN ('manual', 'ai_analyzed', 'ai_generated')),
+        confidence REAL DEFAULT 1.0,
+        created_at TEXT DEFAULT (datetime('now')),
+        updated_at TEXT DEFAULT (datetime('now'))
+      );
+
+      CREATE TABLE IF NOT EXISTS inspiration_materials (
+        id TEXT PRIMARY KEY,
+        novel_id TEXT NOT NULL REFERENCES novels(id) ON DELETE CASCADE,
+        content TEXT NOT NULL,
+        category TEXT DEFAULT 'general' CHECK(category IN ('scene', 'dialogue', 'plot', 'atmosphere', 'action', 'character', 'general')),
+        tags TEXT DEFAULT '[]',
+        is_used INTEGER DEFAULT 0,
+        used_chapters TEXT DEFAULT '[]',
+        color TEXT DEFAULT '#1890ff',
+        created_at TEXT DEFAULT (datetime('now')),
+        updated_at TEXT DEFAULT (datetime('now'))
+      );
+
+      CREATE INDEX IF NOT EXISTS idx_novels_user_id ON novels(user_id);
+      CREATE INDEX IF NOT EXISTS idx_chapters_novel_id ON chapters(novel_id);
+      CREATE INDEX IF NOT EXISTS idx_characters_novel_id ON characters(novel_id);
+      CREATE INDEX IF NOT EXISTS idx_character_relationships_novel ON character_relationships(novel_id);
+      CREATE INDEX IF NOT EXISTS idx_character_relationships_character ON character_relationships(character_id);
+      CREATE INDEX IF NOT EXISTS idx_character_relationships_related ON character_relationships(related_character_id);
+      CREATE INDEX IF NOT EXISTS idx_character_states_novel ON character_states(novel_id);
+      CREATE INDEX IF NOT EXISTS idx_character_states_character ON character_states(character_id);
+      CREATE INDEX IF NOT EXISTS idx_worldview_categories_novel ON worldview_categories(novel_id);
+      CREATE INDEX IF NOT EXISTS idx_worldview_entries_novel ON worldview_entries(novel_id);
+      CREATE INDEX IF NOT EXISTS idx_worldview_entries_parent ON worldview_entries(parent_id);
+      CREATE INDEX IF NOT EXISTS idx_inspiration_materials_novel_id ON inspiration_materials(novel_id);
+    `)
+
+    // 创建默认测试用户
+    const defaultUserId = '00000000-0000-0000-0000-000000000000'
+    const userExists = db.prepare('SELECT id FROM users WHERE id = ?').get(defaultUserId)
+
+    if (!userExists) {
+      db.prepare(`
+        INSERT INTO users (id, email, name, plan)
+        VALUES (?, ?, ?, ?)
+      `).run(defaultUserId, 'test@local.dev', 'Test User', 'free')
+      console.log('✅ 默认用户已创建')
+    }
+
+    // 保存 db 引用
+    sqliteDb = db
+
+    console.log('✅ SQLite 数据库初始化完成')
+  } catch (error) {
+    console.error('Failed to initialize SQLite database:', error)
+    throw error
+  }
 }
 
 // 导出当前数据库类型

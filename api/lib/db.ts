@@ -14,21 +14,35 @@ const supabaseServiceRoleKey = process.env.SUPABASE_SERVICE_ROLE_KEY
 let Database: any = null
 let sqliteDb: any = null
 
-if (DB_TYPE === 'sqlite') {
-  Database = require('better-sqlite3')
-  const path = require('path')
-  const fs = require('fs')
+// 初始化 SQLite（延迟加载）
+function initSQLite() {
+  if (sqliteDb) return sqliteDb
 
-  const dbPath = path.join(process.cwd(), 'data', 'novels.db')
+  try {
+    const DatabaseModule = require('better-sqlite3')
+    const path = require('path')
+    const fs = require('fs')
 
-  // 确保数据目录存在
-  const dataDir = path.dirname(dbPath)
-  if (!fs.existsSync(dataDir)) {
-    fs.mkdirSync(dataDir, { recursive: true })
+    const dbPath = path.join(process.cwd(), 'data', 'novels.db')
+
+    // 确保数据目录存在
+    const dataDir = path.dirname(dbPath)
+    if (!fs.existsSync(dataDir)) {
+      fs.mkdirSync(dataDir, { recursive: true })
+    }
+
+    const db = new DatabaseModule(dbPath)
+    db.pragma('foreign_keys = ON')
+    sqliteDb = db
+    return db
+  } catch (error) {
+    console.error('Failed to load better-sqlite3. Make sure it is installed for local development.')
+    throw error
   }
+}
 
-  sqliteDb = new Database(dbPath)
-  sqliteDb.pragma('foreign_keys = ON')
+if (DB_TYPE === 'sqlite') {
+  initSQLite()
 }
 
 // Supabase 客户端（仅在 Supabase 模式使用）

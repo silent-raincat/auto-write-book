@@ -4,7 +4,7 @@
   "rewrites": [
     {
       "source": "/api/:path*",
-      "destination": "https://auto-write-book-api.railway.app/api/:path*"
+      "destination": "https://auto-write-book-production.up.railway.app/api/:path*"
     }
   ]
 }
